@@ -1,6 +1,6 @@
-export default abstract class EventContainer<T extends Record<string, (...args: any[]) => any>> {
+export default abstract class EventContainer<ET extends Record<string, (...args: any[]) => any>> {
     private events;
-    on<K extends keyof T>(eventName: K, eventHandler: T[K]): void;
-    emit<K extends keyof T>(eventName: K, ...args: Parameters<T[K]>): ReturnType<T[K]>[];
+    on<K extends keyof ET>(eventName: K, eventHandler: ET[K]): void;
+    emit<K extends keyof ET>(eventName: K, ...args: Parameters<ET[K]>): ReturnType<ET[K]>[];
 }
 //# sourceMappingURL=EventContainer.d.ts.map
