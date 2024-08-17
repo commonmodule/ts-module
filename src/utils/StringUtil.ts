@@ -7,6 +7,10 @@ class StringUtil {
     });
     return capitalizedWords.join(" ");
   }
+
+  public isKebabCase(str: string): boolean {
+    return /^[a-z]+(-[a-z]+)*$/.test(str);
+  }
 }
 
 export default new StringUtil();
