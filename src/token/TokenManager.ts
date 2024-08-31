@@ -1,5 +1,3 @@
-export default class TokenManager {
-  public getToken(): string | undefined {
-    return "token";
-  }
+export default abstract class TokenManager {
+  public abstract getToken(): string | undefined;
 }

@@ -1,4 +1,4 @@
-export default class TokenManager {
-    getToken(): string | undefined;
+export default abstract class TokenManager {
+    abstract getToken(): string | undefined;
 }
 //# sourceMappingURL=TokenManager.d.ts.map
