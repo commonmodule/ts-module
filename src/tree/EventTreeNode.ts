@@ -6,8 +6,9 @@ export default abstract class EventTreeNode<
 > extends EventContainer<ET> {
   protected parent: TT | undefined;
   protected children: TT[] = [];
+  protected removed = false;
 
-  public appendTo(parent: TT, index?: number) {
+  public appendTo(parent: TT, index?: number): this {
     if (this.parent === parent) {
       const currentIndex = this.parent.children.indexOf(this as unknown as TT);
       if (index !== undefined && index > currentIndex) {
@@ -25,9 +26,14 @@ export default abstract class EventTreeNode<
     } else {
       parent.children.push(this as unknown as TT);
     }
+
+    return this;
   }
 
   public remove() {
+    if (this.removed) return;
+    this.removed = true;
+
     if (this.parent) {
       const index = this.parent.children.indexOf(this as unknown as TT);
       if (index > -1) this.parent.children.splice(index, 1);
