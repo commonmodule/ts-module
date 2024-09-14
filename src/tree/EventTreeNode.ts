@@ -30,7 +30,7 @@ export default abstract class EventTreeNode<
     return this;
   }
 
-  public remove() {
+  public remove(): void {
     if (this.removed) return;
     this.removed = true;
 

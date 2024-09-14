@@ -25,7 +25,7 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     return this;
   }
 
-  public remove() {
+  public remove(): void {
     if (this.removed) return;
     this.removed = true;
 
