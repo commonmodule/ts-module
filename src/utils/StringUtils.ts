@@ -1,4 +1,4 @@
-class StringUtil {
+class StringUtils {
   public capitalize(input: string): string {
     const words = input.split(" ");
     const capitalizedWords = words.map((word) => {
@@ -13,4 +13,4 @@ class StringUtil {
   }
 }
 
-export default new StringUtil();
+export default new StringUtils();
