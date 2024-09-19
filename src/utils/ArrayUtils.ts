@@ -1,7 +1,9 @@
 class ArrayUtils {
-  public pull<T>(array: T[], ...removeList: T[]): T[] {
-    const removeSet = new Set(removeList);
-    return array.filter((item) => !removeSet.has(item));
+  public pull<T>(array: T[], ...removeList: T[]): void {
+    for (const remove of removeList) {
+      const index = array.indexOf(remove);
+      if (index !== -1) array.splice(index, 1);
+    }
   }
 }
 
