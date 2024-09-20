@@ -3,9 +3,10 @@ export default abstract class EventContainer<
 > {
   private events: { [K in keyof T]?: T[K][] } = {};
 
-  public on<K extends keyof T>(eventName: K, eventHandler: T[K]): void {
+  public on<K extends keyof T>(eventName: K, eventHandler: T[K]): this {
     if (!this.events[eventName]) this.events[eventName] = [];
     this.events[eventName]!.push(eventHandler);
+    return this;
   }
 
   public emit<K extends keyof T>(
