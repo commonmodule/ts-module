@@ -9,6 +9,13 @@ export default abstract class EventContainer<
     return this;
   }
 
+  public off<K extends keyof T>(eventName: K, eventHandler: T[K]): this {
+    if (!this.events[eventName]) return this;
+    const index = this.events[eventName]!.indexOf(eventHandler);
+    if (index !== -1) this.events[eventName]!.splice(index, 1);
+    return this;
+  }
+
   public emit<K extends keyof T>(
     eventName: K,
     ...args: Parameters<T[K]>
