@@ -1,4 +1,4 @@
-type KebabCase<T extends string = string> = T extends Lowercase<T>
+type KebabCase<T extends string> = T extends Lowercase<T>
   ? T extends `${infer First}-${infer Rest}` ? (
       First extends KebabCase<First> ? (
           Rest extends KebabCase<Rest> ? T
