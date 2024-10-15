@@ -5,7 +5,9 @@ export default abstract class EventTreeNode<
   ET extends Record<string, (...args: any[]) => any>,
 > extends EventContainer<ET> {
   protected parent: TT | undefined;
-  protected children: TT[] = [];
+
+  public children: TT[] = [];
+
   protected removed = false;
 
   public appendTo(parent: TT, index?: number): this {
