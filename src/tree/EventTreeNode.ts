@@ -5,10 +5,14 @@ export default abstract class EventTreeNode<
   ET extends Record<string, (...args: any[]) => any>,
 > extends EventContainer<ET> {
   protected parent: TT | undefined;
-
   public children: TT[] = [];
-
   protected removed = false;
+
+  private subscriptions: Array<{
+    container: EventContainer<any>;
+    eventName: string;
+    handler: (...args: any[]) => any;
+  }> = [];
 
   public appendTo(parent: TT, index?: number): this {
     if (this.parent === parent) {
@@ -32,9 +36,35 @@ export default abstract class EventTreeNode<
     return this;
   }
 
+  protected subscribe<
+    T extends Record<string, (...args: any[]) => any>,
+    K extends keyof T,
+  >(
+    container: EventContainer<T>,
+    eventName: K,
+    handler: T[K],
+  ): this {
+    container.on(eventName, handler);
+    this.subscriptions.push({
+      container,
+      eventName: eventName as string,
+      handler,
+    });
+    return this;
+  }
+
+  private unsubscribeFromAll(): void {
+    for (const sub of this.subscriptions) {
+      sub.container.off(sub.eventName, sub.handler);
+    }
+    this.subscriptions = [];
+  }
+
   public remove(): void {
     if (this.removed) return;
     this.removed = true;
+
+    this.unsubscribeFromAll();
 
     if (this.parent) {
       const index = this.parent.children.indexOf(this as unknown as TT);
