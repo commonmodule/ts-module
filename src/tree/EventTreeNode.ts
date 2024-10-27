@@ -15,6 +15,8 @@ export default abstract class EventTreeNode<
   }> = [];
 
   public appendTo(parent: TT, index?: number): this {
+    if (this.removed) throw new Error("Node is removed");
+
     if (this.parent === parent) {
       const currentIndex = this.parent.children.indexOf(this as unknown as TT);
       if (index !== undefined && index > currentIndex) {
@@ -60,6 +62,13 @@ export default abstract class EventTreeNode<
     this.subscriptions = [];
   }
 
+  public empty(): this {
+    while (this.children.length > 0) {
+      this.children[0].remove();
+    }
+    return this;
+  }
+
   public remove(): void {
     if (this.removed) return;
     this.removed = true;
@@ -72,8 +81,6 @@ export default abstract class EventTreeNode<
       this.parent = undefined;
     }
 
-    while (this.children.length > 0) {
-      this.children[0].remove();
-    }
+    this.empty();
   }
 }
