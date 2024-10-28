@@ -38,7 +38,7 @@ export default abstract class EventTreeNode<
     return this;
   }
 
-  protected subscribe<
+  public subscribe<
     T extends Record<string, (...args: any[]) => any>,
     K extends keyof T,
   >(

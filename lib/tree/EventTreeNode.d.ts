@@ -5,7 +5,7 @@ export default abstract class EventTreeNode<TT extends EventTreeNode<TT, ET>, ET
     protected removed: boolean;
     private subscriptions;
     appendTo(parent: TT, index?: number): this;
-    protected subscribe<T extends Record<string, (...args: any[]) => any>, K extends keyof T>(container: EventContainer<T>, eventName: K, handler: T[K]): this;
+    subscribe<T extends Record<string, (...args: any[]) => any>, K extends keyof T>(container: EventContainer<T>, eventName: K, handler: T[K]): this;
     private unsubscribeFromAll;
     empty(): this;
     remove(): void;
