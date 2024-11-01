@@ -2,7 +2,7 @@
   "name": "@common-module/ts",
   "author": "yj.gaia",
   "homepage": "https://yj.dev",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "type": "module",
   "types": "./lib/index.d.ts",
   "main": "./lib/index.js",
