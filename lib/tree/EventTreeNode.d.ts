@@ -7,7 +7,7 @@ export default abstract class EventTreeNode<TT extends EventTreeNode<TT, ET>, ET
     appendTo(parent: TT, index?: number): this;
     subscribe<T extends Record<string, (...args: any[]) => any>, K extends keyof T>(container: EventContainer<T>, eventName: K, handler: T[K]): this;
     private unsubscribeFromAll;
-    empty(): this;
+    clear(...except: (TT | undefined)[]): this;
     remove(): void;
 }
 //# sourceMappingURL=EventTreeNode.d.ts.map

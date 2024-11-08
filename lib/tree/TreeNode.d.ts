@@ -3,7 +3,7 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     protected children: T[];
     protected removed: boolean;
     appendTo(parent: T, index?: number): this;
-    empty(): this;
+    clear(): this;
     remove(): void;
 }
 //# sourceMappingURL=TreeNode.d.ts.map

@@ -27,7 +27,7 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     return this;
   }
 
-  public empty(): this {
+  public clear(): this {
     while (this.children.length > 0) {
       this.children[0].remove();
     }
@@ -44,6 +44,6 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
       this.parent = undefined;
     }
 
-    this.empty();
+    this.clear();
   }
 }

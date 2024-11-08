@@ -62,10 +62,10 @@ export default abstract class EventTreeNode<
     this.subscriptions = [];
   }
 
-  public empty(): this {
-    while (this.children.length > 0) {
-      this.children[0].remove();
-    }
+  public clear(...except: (TT | undefined)[]): this {
+    this.children.forEach((child) => {
+      if (!except.includes(child)) child.remove();
+    });
     return this;
   }
 
@@ -81,6 +81,6 @@ export default abstract class EventTreeNode<
       this.parent = undefined;
     }
 
-    this.empty();
+    this.clear();
   }
 }
