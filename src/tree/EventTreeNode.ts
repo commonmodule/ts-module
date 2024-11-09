@@ -63,9 +63,11 @@ export default abstract class EventTreeNode<
   }
 
   public clear(...except: (TT | undefined)[]): this {
-    this.children.forEach((child) => {
-      if (!except.includes(child)) child.remove();
-    });
+    let i = 0;
+    while (this.children.length > except.length) {
+      const child = this.children[i];
+      !except.includes(child) ? child.remove() : i++;
+    }
     return this;
   }
 
