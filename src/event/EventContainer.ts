@@ -16,7 +16,13 @@ export default abstract class EventContainer<
     return this;
   }
 
-  public emit<K extends keyof T>(
+  protected hasEvent<K extends keyof T>(eventName: K): boolean {
+    const events = this.events[eventName];
+    if (!events) return false;
+    return events.length > 0;
+  }
+
+  protected emit<K extends keyof T>(
     eventName: K,
     ...args: Parameters<T[K]>
   ): ReturnType<T[K]>[] {
