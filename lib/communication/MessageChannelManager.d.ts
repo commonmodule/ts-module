@@ -14,4 +14,4 @@ export default class MessageChannelManager<Handlers extends Record<string, (...a
     private processResponse;
     private processRequest;
 }
-//# sourceMappingURL=ChannelManager.d.ts.map
+//# sourceMappingURL=MessageChannelManager.d.ts.map

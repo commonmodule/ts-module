@@ -1,4 +1,4 @@
-import RealtimeClinet from "./RealtimeClient.js";
+import RealtimeClient from "./RealtimeClient.js";
 
 interface Message {
   channel: string;
@@ -11,19 +11,22 @@ const RESPONSE_CHANNEL = "__response";
 const RESPONSE_ACTION = "return";
 const ERROR_ACTION = "error";
 
-export default class ChannelManager<
+export default class MessageChannelManager<
   Handlers extends Record<string, (...args: any[]) => any>,
 > {
-  private handlers: {
+  private channelHandlers: {
     [channel: string]: { [Action in keyof Handlers]?: Handlers[Action][] };
   } = {};
-  private requestCounter: number = 0;
-  private pendingRequests: Map<string, {
-    resolve: (value: any) => void;
-    reject: (error: any) => void;
-  }> = new Map();
+  private requestCounter = 0;
+  private pendingRequests = new Map<
+    string,
+    {
+      resolve: (value: any) => void;
+      reject: (error: any) => void;
+    }
+  >();
 
-  constructor(private client: RealtimeClinet) {
+  constructor(private client: RealtimeClient) {
     client.onMessage((rawMessage) => this.handleIncomingMessage(rawMessage));
   }
 
@@ -32,10 +35,14 @@ export default class ChannelManager<
     action: Action,
     handler: Handlers[Action],
   ): this {
-    if (!this.handlers[channel]) this.handlers[channel] = {};
-    const channelHandlers = this.handlers[channel]!;
-    if (!channelHandlers[action]) channelHandlers[action] = [];
-    channelHandlers[action]!.push(handler);
+    if (!this.channelHandlers[channel]) {
+      this.channelHandlers[channel] = {};
+    }
+    const actionHandlers = this.channelHandlers[channel]!;
+    if (!actionHandlers[action]) {
+      actionHandlers[action] = [];
+    }
+    actionHandlers[action]!.push(handler);
     return this;
   }
 
@@ -44,22 +51,26 @@ export default class ChannelManager<
     action: Action,
     handler?: Handlers[Action],
   ): this {
-    const channelHandlers = this.handlers[channel];
-    if (!channelHandlers) return this;
+    const channelActions = this.channelHandlers[channel];
+    if (!channelActions) return this;
 
-    const actionHandlers = channelHandlers[action];
+    const actionHandlers = channelActions[action];
     if (!actionHandlers) return this;
 
     if (!handler) {
-      delete channelHandlers[action];
+      delete channelActions[action];
     } else {
       const index = actionHandlers.indexOf(handler);
-      if (index !== -1) actionHandlers.splice(index, 1);
-      if (actionHandlers.length === 0) delete channelHandlers[action];
+      if (index !== -1) {
+        actionHandlers.splice(index, 1);
+      }
+      if (actionHandlers.length === 0) {
+        delete channelActions[action];
+      }
     }
 
-    if (Object.keys(channelHandlers).length === 0) {
-      delete this.handlers[channel];
+    if (Object.keys(channelActions).length === 0) {
+      delete this.channelHandlers[channel];
     }
 
     return this;
@@ -89,14 +100,14 @@ export default class ChannelManager<
   ): ReturnType<Handlers[Action]>[] {
     const { channel, action, args } = message;
 
-    const channelHandlers = this.handlers[channel];
-    const actionHandlers = channelHandlers?.[action as Action];
+    const channelActions = this.channelHandlers[channel];
+    const actionHandlers = channelActions?.[action as Action];
 
     if (!actionHandlers) return [];
     return actionHandlers.map((handler) => handler(...args));
   }
 
-  private async handleIncomingMessage(rawMessage: string) {
+  private async handleIncomingMessage(rawMessage: string): Promise<void> {
     try {
       const message: Message = JSON.parse(rawMessage);
 
