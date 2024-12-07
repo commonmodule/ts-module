@@ -1,32 +1,35 @@
 export default abstract class EventContainer<
-  T extends Record<string, (...args: any[]) => any>,
+  E extends Record<string, (...args: any[]) => any>,
 > {
-  private events: { [K in keyof T]?: T[K][] } = {};
+  private events: { [K in keyof E]?: E[K][] } = {};
 
-  public on<K extends keyof T>(eventName: K, eventHandler: T[K]): this {
+  public on<K extends keyof E>(eventName: K, eventHandler: E[K]): this {
     if (!this.events[eventName]) this.events[eventName] = [];
     this.events[eventName]!.push(eventHandler);
     return this;
   }
 
-  public off<K extends keyof T>(eventName: K, eventHandler: T[K]): this {
-    if (!this.events[eventName]) return this;
-    const index = this.events[eventName]!.indexOf(eventHandler);
-    if (index !== -1) this.events[eventName]!.splice(index, 1);
+  public off<K extends keyof E>(eventName: K, eventHandler: E[K]): this {
+    const events = this.events[eventName];
+    if (!events) return this;
+    const index = events.indexOf(eventHandler);
+    if (index !== -1) events.splice(index, 1);
+    if (events.length === 0) delete this.events[eventName];
     return this;
   }
 
-  protected hasEvent<K extends keyof T>(eventName: K): boolean {
+  protected hasEvent<K extends keyof E>(eventName: K): boolean {
     const events = this.events[eventName];
     if (!events) return false;
     return events.length > 0;
   }
 
-  protected emit<K extends keyof T>(
+  protected emit<K extends keyof E>(
     eventName: K,
-    ...args: Parameters<T[K]>
-  ): ReturnType<T[K]>[] {
-    if (!this.events[eventName]) return [];
-    return this.events[eventName]!.map((handler) => handler(...args));
+    ...args: Parameters<E[K]>
+  ): ReturnType<E[K]>[] {
+    const events = this.events[eventName];
+    if (!events) return [];
+    return events.map((handler) => handler(...args));
   }
 }

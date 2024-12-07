@@ -1,11 +1,11 @@
 import EventContainer from "../event/EventContainer.js";
 
 export default abstract class EventTreeNode<
-  TT extends EventTreeNode<TT, ET>,
-  ET extends Record<string, (...args: any[]) => any>,
-> extends EventContainer<ET> {
-  protected parent: TT | undefined;
-  public children: TT[] = [];
+  T extends EventTreeNode<T, E>,
+  E extends Record<string, (...args: any[]) => any>,
+> extends EventContainer<E> {
+  protected parent: T | undefined;
+  public children: T[] = [];
   protected removed = false;
 
   private subscriptions: Array<{
@@ -14,11 +14,11 @@ export default abstract class EventTreeNode<
     handler: (...args: any[]) => any;
   }> = [];
 
-  public appendTo(parent: TT, index?: number): this {
+  public appendTo(parent: T, index?: number): this {
     if (this.removed) throw new Error("Node is removed");
 
     if (this.parent === parent) {
-      const currentIndex = this.parent.children.indexOf(this as unknown as TT);
+      const currentIndex = this.parent.children.indexOf(this as unknown as T);
       if (index !== undefined && index > currentIndex) {
         index--;
       }
@@ -30,21 +30,21 @@ export default abstract class EventTreeNode<
     this.parent = parent;
 
     if (index !== undefined && index >= 0 && index < parent.children.length) {
-      parent.children.splice(index, 0, this as unknown as TT);
+      parent.children.splice(index, 0, this as unknown as T);
     } else {
-      parent.children.push(this as unknown as TT);
+      parent.children.push(this as unknown as T);
     }
 
     return this;
   }
 
   public subscribe<
-    T extends Record<string, (...args: any[]) => any>,
-    K extends keyof T,
+    E extends Record<string, (...args: any[]) => any>,
+    K extends keyof E,
   >(
-    container: EventContainer<T>,
+    container: EventContainer<E>,
     eventName: K,
-    handler: T[K],
+    handler: E[K],
   ): this {
     container.on(eventName, handler);
     this.subscriptions.push({
@@ -62,7 +62,7 @@ export default abstract class EventTreeNode<
     this.subscriptions = [];
   }
 
-  public clear(...except: (TT | undefined)[]): this {
+  public clear(...except: (T | undefined)[]): this {
     let i = 0;
     while (this.children.length > except.length) {
       const child = this.children[i];
@@ -78,7 +78,7 @@ export default abstract class EventTreeNode<
     this.unsubscribeFromAll();
 
     if (this.parent) {
-      const index = this.parent.children.indexOf(this as unknown as TT);
+      const index = this.parent.children.indexOf(this as unknown as T);
       if (index > -1) this.parent.children.splice(index, 1);
       this.parent = undefined;
     }
