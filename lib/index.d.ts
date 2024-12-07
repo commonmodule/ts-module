@@ -1,3 +1,5 @@
+export { default as ChannelManager } from "./communication/ChannelManager.js";
+export { default as RealtimeClient } from "./communication/RealtimeClient.js";
 export { default as EventContainer } from "./event/EventContainer.js";
 export { default as EventTreeNode } from "./tree/EventTreeNode.js";
 export { default as TreeNode } from "./tree/TreeNode.js";

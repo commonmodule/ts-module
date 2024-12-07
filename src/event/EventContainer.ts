@@ -9,12 +9,16 @@ export default abstract class EventContainer<
     return this;
   }
 
-  public off<K extends keyof E>(eventName: K, eventHandler: E[K]): this {
+  public off<K extends keyof E>(eventName: K, eventHandler?: E[K]): this {
     const events = this.events[eventName];
     if (!events) return this;
-    const index = events.indexOf(eventHandler);
-    if (index !== -1) events.splice(index, 1);
-    if (events.length === 0) delete this.events[eventName];
+    if (!eventHandler) {
+      delete this.events[eventName];
+    } else {
+      const index = events.indexOf(eventHandler);
+      if (index !== -1) events.splice(index, 1);
+      if (events.length === 0) delete this.events[eventName];
+    }
     return this;
   }
 
