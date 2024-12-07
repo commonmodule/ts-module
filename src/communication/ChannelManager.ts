@@ -12,23 +12,25 @@ const RESPONSE_ACTION = "return";
 const ERROR_ACTION = "error";
 
 export default class ChannelManager<
-  H extends Record<string, (...args: any[]) => any>,
+  Handlers extends Record<string, (...args: any[]) => any>,
 > {
-  private handlers: { [channel: string]: { [A in keyof H]?: H[A][] } } = {};
+  private handlers: {
+    [channel: string]: { [Action in keyof Handlers]?: Handlers[Action][] };
+  } = {};
   private requestCounter: number = 0;
-  private pendingResponses: Map<string, {
+  private pendingRequests: Map<string, {
     resolve: (value: any) => void;
     reject: (error: any) => void;
   }> = new Map();
 
   constructor(private client: RealtimeClinet) {
-    client.onMessage((rawMessage) => this.parseAndEmit(rawMessage));
+    client.onMessage((rawMessage) => this.handleIncomingMessage(rawMessage));
   }
 
-  public on<A extends keyof H>(
+  public on<Action extends keyof Handlers>(
     channel: string,
-    action: A,
-    handler: H[A],
+    action: Action,
+    handler: Handlers[Action],
   ): this {
     if (!this.handlers[channel]) this.handlers[channel] = {};
     const channelHandlers = this.handlers[channel]!;
@@ -37,10 +39,10 @@ export default class ChannelManager<
     return this;
   }
 
-  public off<A extends keyof H>(
+  public off<Action extends keyof Handlers>(
     channel: string,
-    action: A,
-    handler?: H[A],
+    action: Action,
+    handler?: Handlers[Action],
   ): this {
     const channelHandlers = this.handlers[channel];
     if (!channelHandlers) return this;
@@ -68,73 +70,83 @@ export default class ChannelManager<
     this.client.send(JSON.stringify(message));
   }
 
-  public request<R>(
+  public request<ResponseType>(
     channel: string,
     action: string,
     ...args: any[]
-  ): Promise<R> {
+  ): Promise<ResponseType> {
     const requestId = `req_${++this.requestCounter}`;
     const message: Message = { channel, action, args, requestId };
 
     return new Promise((resolve, reject) => {
-      this.pendingResponses.set(requestId, { resolve, reject });
+      this.pendingRequests.set(requestId, { resolve, reject });
       this.client.send(JSON.stringify(message));
     });
   }
 
-  private emit<A extends keyof H>(message: Message): ReturnType<H[A]>[] {
+  private emit<Action extends keyof Handlers>(
+    message: Message,
+  ): ReturnType<Handlers[Action]>[] {
     const { channel, action, args } = message;
 
     const channelHandlers = this.handlers[channel];
-    const actionHandlers = channelHandlers?.[action as A];
+    const actionHandlers = channelHandlers?.[action as Action];
 
     if (!actionHandlers) return [];
     return actionHandlers.map((handler) => handler(...args));
   }
 
-  private async parseAndEmit(rawMessage: string) {
+  private async handleIncomingMessage(rawMessage: string) {
     try {
       const message: Message = JSON.parse(rawMessage);
-      if (message.channel && message.action) {
-        if (message.channel === RESPONSE_CHANNEL) {
-          if (message.requestId) {
-            if (message.action === RESPONSE_ACTION) {
-              const response = this.pendingResponses.get(message.requestId);
-              if (response) {
-                response.resolve(message.args[0]);
-                this.pendingResponses.delete(message.requestId!);
-              }
-            } else if (message.action === ERROR_ACTION) {
-              const response = this.pendingResponses.get(message.requestId);
-              if (response) {
-                response.reject(message.args[0]);
-                this.pendingResponses.delete(message.requestId!);
-              }
-            }
-          }
-        } else {
-          const results = this.emit(message);
-          if (message.requestId && results.length > 0) {
-            const result = results[0];
-            const responseMessage: Message = {
-              channel: RESPONSE_CHANNEL,
-              action: RESPONSE_ACTION,
-              args: (result as any) instanceof Promise
-                ? [await result]
-                : [result],
-              requestId: message.requestId,
-            };
-            this.client.send(JSON.stringify(responseMessage));
-          }
-        }
-      } else {
+
+      if (!message.channel || !message.action) {
         console.warn(
           "Invalid message format: Missing channel or action",
           rawMessage,
         );
+        return;
+      }
+
+      if (message.channel === RESPONSE_CHANNEL) {
+        this.processResponse(message);
+      } else {
+        await this.processRequest(message);
       }
     } catch (error) {
       console.error("Failed to parse message:", rawMessage, error);
+    }
+  }
+
+  private processResponse(message: Message): void {
+    const { requestId, action, args } = message;
+    if (!requestId) return;
+
+    const pendingRequest = this.pendingRequests.get(requestId);
+    if (!pendingRequest) return;
+
+    if (action === RESPONSE_ACTION) {
+      pendingRequest.resolve(args[0]);
+    } else if (action === ERROR_ACTION) {
+      pendingRequest.reject(args[0]);
+    }
+
+    this.pendingRequests.delete(requestId);
+  }
+
+  private async processRequest(message: Message): Promise<void> {
+    const { requestId } = message;
+
+    const results = this.emit(message);
+    if (requestId && results.length > 0) {
+      const result = results[0];
+      const responseMessage: Message = {
+        channel: RESPONSE_CHANNEL,
+        action: RESPONSE_ACTION,
+        args: (result as any) instanceof Promise ? [await result] : [result],
+        requestId,
+      };
+      this.client.send(JSON.stringify(responseMessage));
     }
   }
 }

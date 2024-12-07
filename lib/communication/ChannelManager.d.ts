@@ -1,15 +1,17 @@
 import RealtimeClinet from "./RealtimeClient.js";
-export default class ChannelManager<H extends Record<string, (...args: any[]) => any>> {
+export default class ChannelManager<Handlers extends Record<string, (...args: any[]) => any>> {
     private client;
     private handlers;
     private requestCounter;
-    private pendingResponses;
+    private pendingRequests;
     constructor(client: RealtimeClinet);
-    on<A extends keyof H>(channel: string, action: A, handler: H[A]): this;
-    off<A extends keyof H>(channel: string, action: A, handler?: H[A]): this;
+    on<Action extends keyof Handlers>(channel: string, action: Action, handler: Handlers[Action]): this;
+    off<Action extends keyof Handlers>(channel: string, action: Action, handler?: Handlers[Action]): this;
     send(channel: string, action: string, ...args: any[]): void;
-    request<R>(channel: string, action: string, ...args: any[]): Promise<R>;
+    request<ResponseType>(channel: string, action: string, ...args: any[]): Promise<ResponseType>;
     private emit;
-    private parseAndEmit;
+    private handleIncomingMessage;
+    private processResponse;
+    private processRequest;
 }
 //# sourceMappingURL=ChannelManager.d.ts.map
