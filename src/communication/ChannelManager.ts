@@ -3,7 +3,7 @@ import RealtimeClinet from "./RealtimeClient.js";
 interface Message {
   channel: string;
   action: string;
-  data?: any;
+  args: any[];
 }
 
 export default class ChannelManager<
@@ -53,19 +53,19 @@ export default class ChannelManager<
     return this;
   }
 
-  public send(channel: string, action: string, data?: any): void {
-    const message: Message = { channel, action, data };
+  public send(channel: string, action: string, ...args: any[]): void {
+    const message: Message = { channel, action, args };
     this.client.send(JSON.stringify(message));
   }
 
   private emit<A extends keyof H>(message: Message): void {
-    const { channel, action, data } = message;
+    const { channel, action, args } = message;
 
     const channelHandlers = this.handlers[channel];
     const actionHandlers = channelHandlers?.[action as A];
 
     if (actionHandlers) {
-      actionHandlers.forEach((handler) => handler(data));
+      actionHandlers.forEach((handler) => handler(...args));
     } else {
       console.warn(
         `No handler found for channel: ${channel}, action: ${action}`,

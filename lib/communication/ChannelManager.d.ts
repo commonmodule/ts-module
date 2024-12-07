@@ -5,7 +5,7 @@ export default class ChannelManager<H extends Record<string, (...args: any[]) =>
     constructor(client: RealtimeClinet);
     on<A extends keyof H>(channel: string, action: A, handler: H[A]): this;
     off<A extends keyof H>(channel: string, action: A, handler?: H[A]): this;
-    send(channel: string, action: string, data?: any): void;
+    send(channel: string, action: string, ...args: any[]): void;
     private emit;
     private parseAndEmit;
 }
