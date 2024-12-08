@@ -18,13 +18,10 @@ export default class MessageChannelManager<
     [channel: string]: { [Action in keyof Handlers]?: Handlers[Action][] };
   } = {};
   private requestCounter = 0;
-  private pendingRequests = new Map<
-    string,
-    {
-      resolve: (value: any) => void;
-      reject: (error: any) => void;
-    }
-  >();
+  private pendingRequests = new Map<string, {
+    resolve: (value: any) => void;
+    reject: (error: any) => void;
+  }>();
 
   constructor(private client: RealtimeClient) {
     client.onMessage((rawMessage) => this.handleIncomingMessage(rawMessage));
