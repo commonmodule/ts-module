@@ -28,12 +28,25 @@ export default abstract class EventContainer<
     return events.length > 0;
   }
 
-  protected emit<K extends keyof E>(
+  protected async emit<K extends keyof E>(
     eventName: K,
     ...args: Parameters<E[K]>
-  ): ReturnType<E[K]>[] {
+  ): Promise<ReturnType<E[K]>[]> {
     const events = this.events[eventName];
     if (!events) return [];
-    return events.map((handler) => handler(...args));
+
+    const results: ReturnType<E[K]>[] = [];
+    const promises: Promise<ReturnType<E[K]>>[] = [];
+
+    for (const handler of events) {
+      const result = handler(...args);
+      if (result instanceof Promise) {
+        promises.push(result);
+      } else {
+        results.push(result);
+      }
+    }
+
+    return results.concat(await Promise.all(promises));
   }
 }
