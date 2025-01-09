@@ -9,7 +9,7 @@ class StringUtils {
   }
 
   public isKebabCase(str: string): boolean {
-    return /^[a-z]+(-[a-z]+)*$/.test(str);
+    return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(str);
   }
 
   public formatNumberWithCommas(value: string, decimals?: number) {
