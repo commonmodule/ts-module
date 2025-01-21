@@ -26,6 +26,10 @@ export default abstract class ResourceLoader<T> {
     return await this.loadResource(id, ...args);
   }
 
+  public isLoaded(id: string): boolean {
+    return this.resources.has(id);
+  }
+
   public release(id: string): void {
     const refCount = this.refCount.get(id);
     if (refCount === undefined) throw new Error(`Resource not found: ${id}`);

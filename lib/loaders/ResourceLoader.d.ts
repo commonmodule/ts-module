@@ -7,6 +7,7 @@ export default abstract class ResourceLoader<T> {
     protected abstract cleanup(resource: T, id: string): void;
     private incrementRefCount;
     load(id: string, ...args: any[]): Promise<T | undefined>;
+    isLoaded(id: string): boolean;
     release(id: string): void;
 }
 //# sourceMappingURL=ResourceLoader.d.ts.map
