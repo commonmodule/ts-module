@@ -1,7 +1,6 @@
 export { default as EventContainer } from "../lib/event/EventContainer.js";
 export { default as EventTreeNode } from "../lib/tree/EventTreeNode.js";
 export { default as TreeNode } from "../lib/tree/TreeNode.js";
-export type { default as KebabCase } from "../lib/types/KebabCase.d.ts";
 export { default as ArrayUtils } from "../lib/utils/ArrayUtils.js";
 export { default as Debouncer } from "../lib/utils/Debouncer.js";
 export { default as IntegerUtils } from "../lib/utils/IntegerUtils.js";
