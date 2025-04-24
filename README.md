@@ -306,20 +306,24 @@ after a certain time has elapsed without re-triggering.
 
 ```ts
 class Debouncer {
-  constructor(delayMs: number, callback: (...args: any[]) => void) {
-    // ...
-  }
+  constructor(delayMs: number, callback: (...args: any[]) => void) {/* ... */}
+  // ...
 }
 ```
 
+**Constructor**:
+
+- `delayMs: number` – The time in milliseconds to wait before calling the
+  callback. Must be >= 0.
+- `callback: (...args: any[]) => void` – The function to call after the delay.
+
 **Members**:
 
-| Member                                                                   | Access     | Description                                                                                                          |
-| ------------------------------------------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Constructor**(`delayMs: number`, `callback: (...args: any[]) => void`) | _public_   | Creates a debouncer that waits `delayMs` milliseconds before calling `callback`.                                     |
-| `execute(...args: any[]): void`                                          | **public** | Schedules the callback to run after the specified delay. If called again before the delay expires, the timer resets. |
-| `cancel(): void`                                                         | **public** | Cancels any pending debounced callback.                                                                              |
-| `isPending(): boolean`                                                   | **public** | Returns `true` if there is a pending execution that hasn’t yet fired.                                                |
+| Member                          | Access     | Description                                                                                                          |
+| ------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| `execute(...args: any[]): void` | **public** | Schedules the callback to run after the specified delay. If called again before the delay expires, the timer resets. |
+| `cancel(): void`                | **public** | Cancels any pending debounced callback.                                                                              |
+| `isPending(): boolean`          | **public** | Returns `true` if there is a pending execution that hasn’t yet fired.                                                |
 
 ---
 
