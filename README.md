@@ -188,6 +188,7 @@ abstract class ResourceLoader<T> {
 | `load(id: string, ...args: any[]): Promise<T \| undefined>`         | **public**                 | Increments the reference count for the resource. If already loaded or loading, returns the existing resource/promise; otherwise, calls `loadResource`. |
 | `isLoaded(id: string): boolean`                                     | **public**                 | Checks if a resource is currently loaded (i.e., exists in `resources` map).                                                                            |
 | `release(id: string): void`                                         | **public**                 | Decrements the resource’s reference count. If it drops to 0, calls `cleanup(resource, id)` and removes the resource from `resources`.                  |
+| `isResourceInUse(id: string): boolean`                              | **protected**              | Checks if a resource is still in use (i.e., reference count > 0).                                                                                      |
 | `loadResource(id: string, ...args: any[]): Promise<T \| undefined>` | **protected** **abstract** | Subclasses must implement the actual resource loading logic.                                                                                           |
 | `cleanup(resource: T, id: string): void`                            | **protected** **abstract** | Subclasses must define how to clean up the resource (e.g. disposing of memory, closing connections) after the reference count drops to 0.              |
 
