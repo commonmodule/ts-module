@@ -1,6 +1,8 @@
 import EventRecord from "./EventRecord.js";
 
-export default abstract class EventContainer<E extends EventRecord = {}> {
+export default abstract class EventContainer<
+  E extends EventRecord = EventRecord,
+> {
   private events: { [K in keyof E]?: E[K][] } = {};
 
   public on<K extends keyof E>(eventName: K, eventHandler: E[K]): this {
