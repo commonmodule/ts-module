@@ -3,7 +3,7 @@ import EventContainer from "../event/EventContainer.js";
 export default abstract class EventTreeNode<
   T extends EventTreeNode<T, E>,
   E extends Record<string, (...args: any[]) => any>,
-> extends EventContainer<E> {
+> extends EventContainer<E & { remove: () => void }> {
   protected parent: T | undefined;
   public children: T[] = [];
   protected removed = false;
@@ -72,7 +72,7 @@ export default abstract class EventTreeNode<
       "remove",
       ...([] as Parameters<(E & { remove: () => void })["remove"]>),
     );
-    this.removeEvents();
+    this.clearEvents();
 
     for (const sub of this.subscriptions) {
       sub.container.off(sub.eventName, sub.handler);

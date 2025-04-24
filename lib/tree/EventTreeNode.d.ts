@@ -1,5 +1,7 @@
 import EventContainer from "../event/EventContainer.js";
-export default abstract class EventTreeNode<T extends EventTreeNode<T, E>, E extends Record<string, (...args: any[]) => any>> extends EventContainer<E> {
+export default abstract class EventTreeNode<T extends EventTreeNode<T, E>, E extends Record<string, (...args: any[]) => any>> extends EventContainer<E & {
+    remove: () => void;
+}> {
     protected parent: T | undefined;
     children: T[];
     protected removed: boolean;
