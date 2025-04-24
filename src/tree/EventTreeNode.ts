@@ -55,13 +55,6 @@ export default abstract class EventTreeNode<
     return this;
   }
 
-  private unsubscribeFromAll(): void {
-    for (const sub of this.subscriptions) {
-      sub.container.off(sub.eventName, sub.handler);
-    }
-    this.subscriptions = [];
-  }
-
   public clear(...except: (T | undefined)[]): this {
     let i = 0;
     while (this.children.length > except.length) {
@@ -75,7 +68,16 @@ export default abstract class EventTreeNode<
     if (this.removed) return;
     this.removed = true;
 
-    this.unsubscribeFromAll();
+    this.emit(
+      "remove",
+      ...([] as Parameters<(E & { remove: () => void })["remove"]>),
+    );
+    this.removeEvents();
+
+    for (const sub of this.subscriptions) {
+      sub.container.off(sub.eventName, sub.handler);
+    }
+    delete (this as any).subscriptions;
 
     if (this.parent) {
       const index = this.parent.children.indexOf(this as unknown as T);
@@ -84,5 +86,6 @@ export default abstract class EventTreeNode<
     }
 
     this.clear();
+    delete (this as any).children;
   }
 }

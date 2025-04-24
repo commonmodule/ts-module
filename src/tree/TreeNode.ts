@@ -45,5 +45,6 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     }
 
     this.clear();
+    delete (this as any).children;
   }
 }

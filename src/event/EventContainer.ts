@@ -49,4 +49,8 @@ export default abstract class EventContainer<
 
     return results.concat(await Promise.all(promises));
   }
+
+  public removeEvents(): void {
+    delete (this as any).events;
+  }
 }
