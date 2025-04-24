@@ -1,4 +1,3 @@
-import EventContainer from "../event/EventContainer.js";
 import EventRecord from "../event/EventRecord.js";
 import TreeNode from "./TreeNode.js";
 export default abstract class EventTreeNode<T extends EventTreeNode<T, E>, E extends EventRecord> extends TreeNode<T> {
@@ -22,7 +21,9 @@ export default abstract class EventTreeNode<T extends EventTreeNode<T, E>, E ext
     })[K]>): Promise<ReturnType<(E & {
         remove: () => void;
     })[K]>[]>;
-    subscribe<E2 extends EventRecord, K extends keyof E2>(container: EventContainer<E2>, eventName: K, handler: E2[K]): this;
+    subscribe<E2 extends (EventRecord & {
+        remove: () => void;
+    }), K extends keyof E2>(target: EventTreeNode<any, E2>, eventName: K, handler: E2[K]): this;
     remove(): void;
 }
 //# sourceMappingURL=EventTreeNode.d.ts.map

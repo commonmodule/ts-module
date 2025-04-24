@@ -9,7 +9,7 @@ export default abstract class EventTreeNode<
   private readonly events = new EventContainer<E & { remove: () => void }>();
 
   private subscriptions: Array<{
-    container: EventContainer<any>;
+    target: EventTreeNode<any, EventRecord>;
     eventName: string;
     handler: (...args: any[]) => any;
   }> = [];
@@ -41,14 +41,17 @@ export default abstract class EventTreeNode<
     return this.events["emit"](eventName, ...args);
   }
 
-  public subscribe<E2 extends EventRecord, K extends keyof E2>(
-    container: EventContainer<E2>,
+  public subscribe<
+    E2 extends (EventRecord & { remove: () => void }),
+    K extends keyof E2,
+  >(
+    target: EventTreeNode<any, E2>,
     eventName: K,
     handler: E2[K],
   ): this {
-    container.on(eventName, handler);
+    target.on(eventName, handler);
     this.subscriptions.push({
-      container,
+      target,
       eventName: eventName as string,
       handler,
     });
@@ -64,7 +67,7 @@ export default abstract class EventTreeNode<
     );
 
     this.events["clearEvents"]();
-    for (const s of this.subscriptions) s.container.off(s.eventName, s.handler);
+    for (const s of this.subscriptions) s.target.off(s.eventName, s.handler);
 
     super.remove();
   }
