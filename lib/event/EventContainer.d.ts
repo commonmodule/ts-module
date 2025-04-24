@@ -1,4 +1,5 @@
-export default abstract class EventContainer<E extends Record<string, (...args: any[]) => any>> {
+import EventRecord from "./EventRecord.js";
+export default abstract class EventContainer<E extends EventRecord = {}> {
     private events;
     on<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
     off<K extends keyof E>(eventName: K, eventHandler?: E[K]): this;

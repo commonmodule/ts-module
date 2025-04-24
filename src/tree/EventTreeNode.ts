@@ -1,8 +1,9 @@
 import EventContainer from "../event/EventContainer.js";
+import EventRecord from "../event/EventRecord.js";
 
 export default abstract class EventTreeNode<
   T extends EventTreeNode<T, E>,
-  E extends Record<string, (...args: any[]) => any>,
+  E extends EventRecord,
 > extends EventContainer<E & { remove: () => void }> {
   protected parent: T | undefined;
   public children: T[] = [];
@@ -38,10 +39,7 @@ export default abstract class EventTreeNode<
     return this;
   }
 
-  public subscribe<
-    E extends Record<string, (...args: any[]) => any>,
-    K extends keyof E,
-  >(
+  public subscribe<E extends EventRecord, K extends keyof E>(
     container: EventContainer<E>,
     eventName: K,
     handler: E[K],
