@@ -50,11 +50,22 @@ export default abstract class EventTreeNode<
     handler: E2[K],
   ): this {
     target.on(eventName, handler);
+
+    target.on("remove", () => {
+      const findIndex = this.subscriptions.findIndex(
+        (s) =>
+          s.target === target && s.eventName === eventName &&
+          s.handler === handler,
+      );
+      if (findIndex !== -1) this.subscriptions.splice(findIndex, 1);
+    });
+
     this.subscriptions.push({
       target,
       eventName: eventName as string,
       handler,
     });
+
     return this;
   }
 
