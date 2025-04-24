@@ -1,6 +1,6 @@
 import EventRecord from "./EventRecord.js";
 
-export default abstract class EventContainer<
+export default class EventContainer<
   E extends EventRecord = EventRecord,
 > {
   private events: { [K in keyof E]?: E[K][] } = {};
@@ -52,7 +52,7 @@ export default abstract class EventContainer<
     return results.concat(await Promise.all(promises));
   }
 
-  public clearEvents(): void {
+  protected clearEvents(): void {
     delete (this as any).events;
   }
 }

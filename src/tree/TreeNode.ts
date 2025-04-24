@@ -1,6 +1,7 @@
 export default abstract class TreeNode<T extends TreeNode<T>> {
   protected parent: T | undefined;
-  protected children: T[] = [];
+  public children: T[] = [];
+
   protected removed = false;
 
   public appendTo(parent: T, index?: number): this {
@@ -27,9 +28,11 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     return this;
   }
 
-  public clear(): this {
-    while (this.children.length > 0) {
-      this.children[0].remove();
+  public clear(...except: (T | undefined)[]): this {
+    let i = 0;
+    while (this.children.length > except.length) {
+      const c = this.children[i];
+      !except.includes(c) ? c.remove() : i++;
     }
     return this;
   }

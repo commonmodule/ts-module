@@ -1,13 +1,12 @@
 import EventContainer from "../event/EventContainer.js";
 import EventRecord from "../event/EventRecord.js";
+import TreeNode from "./TreeNode.js";
 
 export default abstract class EventTreeNode<
   T extends EventTreeNode<T, E>,
   E extends EventRecord,
-> extends EventContainer<E & { remove: () => void }> {
-  protected parent: T | undefined;
-  public children: T[] = [];
-  protected removed = false;
+> extends TreeNode<T> {
+  private readonly events = new EventContainer<E & { remove: () => void }>();
 
   private subscriptions: Array<{
     container: EventContainer<any>;
@@ -15,34 +14,37 @@ export default abstract class EventTreeNode<
     handler: (...args: any[]) => any;
   }> = [];
 
-  public appendTo(parent: T, index?: number): this {
-    if (this.removed) throw new Error("Node is removed");
-
-    if (this.parent === parent) {
-      const currentIndex = this.parent.children.indexOf(this as unknown as T);
-      if (index !== undefined && index > currentIndex) {
-        index--;
-      }
-      this.parent.children.splice(currentIndex, 1);
-    } else if (this.parent) {
-      this.remove();
-    }
-
-    this.parent = parent;
-
-    if (index !== undefined && index >= 0 && index < parent.children.length) {
-      parent.children.splice(index, 0, this as unknown as T);
-    } else {
-      parent.children.push(this as unknown as T);
-    }
-
+  public on<K extends keyof (E & { remove: () => void })>(
+    eventName: K,
+    handler: (E & { remove: () => void })[K],
+  ): this {
+    this.events.on(eventName, handler);
     return this;
   }
 
-  public subscribe<E extends EventRecord, K extends keyof E>(
-    container: EventContainer<E>,
+  public off<K extends keyof (E & { remove: () => void })>(
     eventName: K,
-    handler: E[K],
+    handler?: (E & { remove: () => void })[K],
+  ): this {
+    this.events.off(eventName, handler);
+    return this;
+  }
+
+  protected hasEvent<K extends keyof E>(eventName: K): boolean {
+    return this.events["hasEvent"](eventName);
+  }
+
+  protected emit<K extends keyof (E & { remove: () => void })>(
+    eventName: K,
+    ...args: Parameters<(E & { remove: () => void })[K]>
+  ) {
+    return this.events["emit"](eventName, ...args);
+  }
+
+  public subscribe<E2 extends EventRecord, K extends keyof E2>(
+    container: EventContainer<E2>,
+    eventName: K,
+    handler: E2[K],
   ): this {
     container.on(eventName, handler);
     this.subscriptions.push({
@@ -53,37 +55,17 @@ export default abstract class EventTreeNode<
     return this;
   }
 
-  public clear(...except: (T | undefined)[]): this {
-    let i = 0;
-    while (this.children.length > except.length) {
-      const child = this.children[i];
-      !except.includes(child) ? child.remove() : i++;
-    }
-    return this;
-  }
-
-  public remove(): void {
+  public override remove(): void {
     if (this.removed) return;
-    this.removed = true;
 
     this.emit(
       "remove",
       ...([] as Parameters<(E & { remove: () => void })["remove"]>),
     );
-    this.clearEvents();
 
-    for (const sub of this.subscriptions) {
-      sub.container.off(sub.eventName, sub.handler);
-    }
-    delete (this as any).subscriptions;
+    this.events["clearEvents"]();
+    for (const s of this.subscriptions) s.container.off(s.eventName, s.handler);
 
-    if (this.parent) {
-      const index = this.parent.children.indexOf(this as unknown as T);
-      if (index > -1) this.parent.children.splice(index, 1);
-      this.parent = undefined;
-    }
-
-    this.clear();
-    delete (this as any).children;
+    super.remove();
   }
 }
