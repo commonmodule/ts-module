@@ -12,6 +12,7 @@ export default abstract class EventTreeNode<
     target: EventTreeNode<any, EventRecord>;
     eventName: string;
     handler: (...args: any[]) => any;
+    removeHandler: () => void;
   }> = [];
 
   public on<K extends keyof (E & { remove: () => void })>(
@@ -51,19 +52,22 @@ export default abstract class EventTreeNode<
   ): this {
     target.on(eventName, handler);
 
-    target.on("remove", () => {
+    const removeHandler = () => {
       const findIndex = this.subscriptions.findIndex(
         (s) =>
           s.target === target && s.eventName === eventName &&
           s.handler === handler,
       );
       if (findIndex !== -1) this.subscriptions.splice(findIndex, 1);
-    });
+    };
+
+    target.on("remove", removeHandler);
 
     this.subscriptions.push({
       target,
       eventName: eventName as string,
       handler,
+      removeHandler,
     });
 
     return this;
@@ -79,7 +83,10 @@ export default abstract class EventTreeNode<
 
     this.events["clearEvents"]();
 
-    for (const s of this.subscriptions) s.target.off(s.eventName, s.handler);
+    for (const s of this.subscriptions) {
+      s.target.off(s.eventName, s.handler);
+      s.target.off("remove", s.removeHandler);
+    }
     delete (this as any).subscriptions;
 
     super.remove();
