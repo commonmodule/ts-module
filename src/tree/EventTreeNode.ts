@@ -78,7 +78,9 @@ export default abstract class EventTreeNode<
     );
 
     this.events["clearEvents"]();
+
     for (const s of this.subscriptions) s.target.off(s.eventName, s.handler);
+    delete (this as any).subscriptions;
 
     super.remove();
   }
