@@ -31,6 +31,8 @@ utilities, and communication management through a realtime client.
 
 ```bash
 npm install @commonmodule/ts
+# or
+yarn add @commonmodule/ts
 ```
 
 ## Overview
@@ -518,4 +520,4 @@ the [LICENSE](./LICENSE) file in the repository.
 
 ---
 
-**Author**: [yj.gaia](https://personas.gaia.cc/yj.gaia)
+**Author**: [yj.gaia](https://github.com/yjgaia)
