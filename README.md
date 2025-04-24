@@ -36,12 +36,12 @@ utilities, and communication management through a realtime client.
      - [TreeNode](#treenode)
      - [EventTreeNode](#eventtreenode)
    - [Utils](#utils)
+     - [IntegerUtils](#integerutils)
      - [StringUtils](#stringutils)
+     - [ArrayUtils](#arrayutils)
      - [ObjectUtils](#objectutils)
      - [JsonUtils](#jsonutils)
      - [Debouncer](#debouncer)
-     - [IntegerUtils](#integerutils)
-     - [ArrayUtils](#arrayutils)
 3. [Usage Examples](#usage-examples)
 4. [Contributing](#contributing)
 5. [License](#license)
@@ -260,6 +260,19 @@ abstract class EventTreeNode<
 
 ---
 
+#### IntegerUtils
+
+Provides utility methods for integer-related operations (exported as a singleton
+instance).
+
+**Members**:
+
+| Member                             | Access     | Description                                                     |
+| ---------------------------------- | ---------- | --------------------------------------------------------------- |
+| `random(min: number, max: number)` | **public** | Generates a random integer between `min` and `max` (inclusive). |
+
+---
+
 #### StringUtils
 
 Utility class (exported as a singleton instance) for common string
@@ -272,6 +285,19 @@ manipulations.
 | `capitalize(input: string): string`                                | **public** | Capitalizes the first letter of each word in a given string, making all other letters lowercase.                                                                       |
 | `isKebabCase(str: string): boolean`                                | **public** | Checks if a given string is in kebab-case (lowercase words separated by hyphens).                                                                                      |
 | `formatNumberWithCommas(value: string, decimals?: number): string` | **public** | Inserts commas as thousands separators in a numeric string. If `decimals` is provided (and the number is within safe integer range), it formats to that many decimals. |
+
+---
+
+#### ArrayUtils
+
+Provides utility methods for array manipulation (exported as a singleton
+instance).
+
+**Members**:
+
+| Member                                          | Access     | Description                                                                        |
+| ----------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
+| `pull<T>(array: T[], ...removeList: T[]): void` | **public** | Removes the specified elements (`removeList`) from the given array, if they exist. |
 
 ---
 
@@ -324,32 +350,6 @@ class Debouncer {
 | `execute(...args: any[]): void` | **public** | Schedules the callback to run after the specified delay. If called again before the delay expires, the timer resets. |
 | `cancel(): void`                | **public** | Cancels any pending debounced callback.                                                                              |
 | `isPending(): boolean`          | **public** | Returns `true` if there is a pending execution that hasn’t yet fired.                                                |
-
----
-
-#### IntegerUtils
-
-Provides utility methods for integer-related operations (exported as a singleton
-instance).
-
-**Members**:
-
-| Member                             | Access     | Description                                                     |
-| ---------------------------------- | ---------- | --------------------------------------------------------------- |
-| `random(min: number, max: number)` | **public** | Generates a random integer between `min` and `max` (inclusive). |
-
----
-
-#### ArrayUtils
-
-Provides utility methods for array manipulation (exported as a singleton
-instance).
-
-**Members**:
-
-| Member                                          | Access     | Description                                                                        |
-| ----------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
-| `pull<T>(array: T[], ...removeList: T[]): void` | **public** | Removes the specified elements (`removeList`) from the given array, if they exist. |
 
 ---
 
