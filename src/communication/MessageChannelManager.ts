@@ -36,9 +36,7 @@ export default class MessageChannelManager<
       this.channelHandlers[channel] = {};
     }
     const actionHandlers = this.channelHandlers[channel]!;
-    if (!actionHandlers[action]) {
-      actionHandlers[action] = [];
-    }
+    if (!actionHandlers[action]) actionHandlers[action] = [];
     actionHandlers[action]!.push(handler);
     return this;
   }
