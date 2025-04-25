@@ -174,17 +174,12 @@ abstract class ResourceLoader<T> {
 }
 ```
 
-**Key Properties**:
-
-- `resources: Map<string, T>` – Stores loaded resources by ID.
-- `pendingLoads: Map<string, Promise<T | undefined>>` – Keeps track of pending
-  load operations.
-- `refCount: Map<string, number>` – Reference counts per resource ID.
-
 **Members**:
 
 | Member                                                              | Access                     | Description                                                                                                                                            |
 | ------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `resources: Map<string, T>`                                         | **protected**              | Stores loaded resources by ID.                                                                                                                         |
+| `pendingLoads: Map<string, Promise<T \| undefined>>`                | **protected**              | Keeps track of pending load operations.                                                                                                                |
 | `load(id: string, ...args: any[]): Promise<T \| undefined>`         | **public**                 | Increments the reference count for the resource. If already loaded or loading, returns the existing resource/promise; otherwise, calls `loadResource`. |
 | `isLoaded(id: string): boolean`                                     | **public**                 | Checks if a resource is currently loaded (i.e., exists in `resources` map).                                                                            |
 | `release(id: string): void`                                         | **public**                 | Decrements the resource’s reference count. If it drops to 0, calls `cleanup(resource, id)` and removes the resource from `resources`.                  |
