@@ -13,7 +13,9 @@ export default abstract class ResourceLoader<T> {
     ...args: any[]
   ): Promise<T | undefined>;
 
-  protected abstract cleanup(resource: T, id: string): void;
+  protected cleanup(id: string, resource: T): void {
+    // Override this method in subclasses to clean up the resource
+  }
 
   private incrementRefCount(id: string): void {
     this.refCount.set(id, (this.refCount.get(id) || 0) + 1);
@@ -38,7 +40,7 @@ export default abstract class ResourceLoader<T> {
       this.refCount.delete(id);
       const resource = this.resources.get(id);
       if (resource) {
-        this.cleanup(resource, id);
+        this.cleanup(id, resource);
         this.resources.delete(id);
       }
     } else {

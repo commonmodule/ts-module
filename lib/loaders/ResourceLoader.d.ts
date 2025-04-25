@@ -4,7 +4,7 @@ export default abstract class ResourceLoader<T> {
     private refCount;
     protected isResourceInUse(id: string): boolean;
     protected abstract loadResource(id: string, ...args: any[]): Promise<T | undefined>;
-    protected abstract cleanup(resource: T, id: string): void;
+    protected cleanup(id: string, resource: T): void;
     private incrementRefCount;
     load(id: string, ...args: any[]): Promise<T | undefined>;
     isLoaded(id: string): boolean;
