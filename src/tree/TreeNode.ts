@@ -1,8 +1,7 @@
 export default abstract class TreeNode<T extends TreeNode<T>> {
   protected parent: T | undefined;
   public children: T[] = [];
-
-  protected removed = false;
+  public removed = false;
 
   public appendTo(parent: T, index?: number): this {
     if (this.removed) throw new Error("Node is removed");
