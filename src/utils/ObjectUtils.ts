@@ -1,5 +1,5 @@
-class ObjectUtils {
-  public isEqual(obj1: any, obj2: any): boolean {
+export default class ObjectUtils {
+  public static isEqual(obj1: any, obj2: any): boolean {
     if (obj1 === obj2) {
       return true;
     }
@@ -27,5 +27,3 @@ class ObjectUtils {
     return true;
   }
 }
-
-export default new ObjectUtils();

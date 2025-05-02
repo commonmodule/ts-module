@@ -1,5 +1,5 @@
-class StringUtils {
-  public capitalize(input: string): string {
+export default class StringUtils {
+  public static capitalize(input: string): string {
     const words = input.split(" ");
     const capitalizedWords = words.map((word) => {
       if (word.length === 0) return word;
@@ -8,11 +8,11 @@ class StringUtils {
     return capitalizedWords.join(" ");
   }
 
-  public isKebabCase(str: string): boolean {
+  public static isKebabCase(str: string): boolean {
     return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(str);
   }
 
-  public formatNumberWithCommas(value: string, decimals?: number) {
+  public static formatNumberWithCommas(value: string, decimals?: number) {
     if (decimals === undefined || +(+value) > Number.MAX_SAFE_INTEGER) {
       const parts = value.split(".");
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -24,5 +24,3 @@ class StringUtils {
     }
   }
 }
-
-export default new StringUtils();
