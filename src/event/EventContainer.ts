@@ -1,7 +1,8 @@
 import EventHandlers from "./EventHandlers.js";
 import IEventContainer from "./IEventContainer.js";
 
-export type WithDefaultHandlers<E> = E & { remove: () => void };
+export type DefaultHandlers = { remove: () => void };
+export type WithDefaultHandlers<E> = E & DefaultHandlers;
 
 export default class EventContainer<E extends EventHandlers>
   implements IEventContainer<WithDefaultHandlers<E>> {
@@ -48,6 +49,14 @@ export default class EventContainer<E extends EventHandlers>
     return events.length > 0;
   }
 
+  protected async emit<K extends keyof E>(
+    eventName: K,
+    ...args: Parameters<E[K]>
+  ): Promise<ReturnType<E[K]>[]>;
+  protected async emit<K extends keyof DefaultHandlers>(
+    eventName: K,
+    ...args: Parameters<DefaultHandlers[K]>
+  ): Promise<ReturnType<DefaultHandlers[K]>[]>;
   protected async emit<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
     ...args: Parameters<WithDefaultHandlers<E>[K]>
@@ -102,7 +111,7 @@ export default class EventContainer<E extends EventHandlers>
     if (!this.eventHandlers) {
       throw new Error("This container is already removed");
     }
-    this.emit("remove", ...[] as Parameters<WithDefaultHandlers<E>["remove"]>);
+    this.emit("remove");
     delete (this as any).eventHandlers;
   }
 }
