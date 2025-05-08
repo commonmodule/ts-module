@@ -1,4 +1,5 @@
 import EventContainer, {
+  DefaultHandlers,
   WithDefaultHandlers,
 } from "../event/EventContainer.js";
 import EventHandlers from "../event/EventHandlers.js";
@@ -25,12 +26,21 @@ export default abstract class EventNode<
     return this.eventContainer["hasEvent"](eventName);
   }
 
-  protected emit<K extends keyof WithDefaultHandlers<E>>(
+  protected async emit<K extends keyof E>(
+    eventName: K,
+    ...args: Parameters<E[K]>
+  ): Promise<ReturnType<E[K]>[]>;
+
+  protected async emit<K extends keyof DefaultHandlers>(
+    eventName: K,
+    ...args: Parameters<DefaultHandlers[K]>
+  ): Promise<ReturnType<DefaultHandlers[K]>[]>;
+
+  protected async emit<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
     ...args: Parameters<WithDefaultHandlers<E>[K]>
-  ): this {
-    this.eventContainer["emit"](eventName, ...args);
-    return this;
+  ): Promise<ReturnType<WithDefaultHandlers<E>[K]>[]> {
+    return this.eventContainer["emit"](eventName, ...args);
   }
 
   public remove(): void {

@@ -1,6 +1,6 @@
 export { default as MessageChannelManager } from "./communication/MessageChannelManager.js";
 export { default as RealtimeClient } from "./communication/RealtimeClient.js";
-export { default as EventContainer, WithDefaultHandlers } from "./event/EventContainer.js";
+export { default as EventContainer, DefaultHandlers, WithDefaultHandlers, } from "./event/EventContainer.js";
 export { default as EventHandlers } from "./event/EventHandlers.js";
 export { default as ResourceLoader } from "./loaders/ResourceLoader.js";
 export { default as EventNode } from "./node/EventNode.js";

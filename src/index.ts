@@ -2,7 +2,8 @@ export { default as MessageChannelManager } from "./communication/MessageChannel
 export { default as RealtimeClient } from "./communication/RealtimeClient.js";
 export {
   default as EventContainer,
-  WithDefaultHandlers
+  DefaultHandlers,
+  WithDefaultHandlers,
 } from "./event/EventContainer.js";
 export { default as EventHandlers } from "./event/EventHandlers.js";
 export { default as ResourceLoader } from "./loaders/ResourceLoader.js";
@@ -14,4 +15,3 @@ export { default as JsonUtils, JsonValue } from "./utils/JsonUtils.js";
 export { default as ObjectUtils } from "./utils/ObjectUtils.js";
 export { default as RealUtils } from "./utils/RealUtils.js";
 export { default as StringUtils } from "./utils/StringUtils.js";
-
