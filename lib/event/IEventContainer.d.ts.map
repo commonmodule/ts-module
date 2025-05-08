@@ -1,0 +1,1 @@
+{"version":3,"file":"IEventContainer.d.ts","sourceRoot":"","sources":["../../src/event/IEventContainer.ts"],"names":[],"mappings":"AAAA,OAAO,aAAa,MAAM,oBAAoB,CAAC;AAE/C,MAAM,CAAC,OAAO,WAAW,eAAe,CAAC,CAAC,SAAS,aAAa;IAC9D,EAAE,CAAC,CAAC,SAAS,MAAM,CAAC,EAAE,SAAS,EAAE,CAAC,EAAE,YAAY,EAAE,CAAC,CAAC,CAAC,CAAC,GAAG,IAAI,CAAC;CAC/D"}

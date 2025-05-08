@@ -1,10 +1,13 @@
-export default abstract class TreeNode<T extends TreeNode<T>> {
+export default abstract class Node<T extends Node<T>> {
   protected parent: T | undefined;
-  public children: T[] = [];
-  public removed = false;
+  protected children: T[] = [];
+
+  protected isRemoved(): boolean {
+    return (this as any).children === undefined;
+  }
 
   public appendTo(parent: T, index?: number): this {
-    if (this.removed) throw new Error("Node is removed");
+    if (this.isRemoved()) throw new Error("Node is removed");
 
     if (this.parent === parent) {
       const currentIndex = this.parent.children.indexOf(this as unknown as T);
@@ -27,7 +30,7 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     return this;
   }
 
-  public clear(...except: (T | undefined)[]): this {
+  protected clear(...except: (T | undefined)[]): this {
     let i = 0;
     while (this.children.length > except.length) {
       const c = this.children[i];
@@ -37,8 +40,7 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
   }
 
   public remove(): void {
-    if (this.removed) return;
-    this.removed = true;
+    if (this.isRemoved()) throw new Error("Node is already removed");
 
     if (this.parent) {
       const index = this.parent.children.indexOf(this as unknown as T);

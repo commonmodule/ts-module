@@ -6,4 +6,4 @@ export default abstract class TreeNode<T extends TreeNode<T>> {
     remove(): void;
     private isRemoved;
 }
-//# sourceMappingURL=TreeNode.d.ts.map
+//# sourceMappingURL=TreeNode%20copy.d.ts.map

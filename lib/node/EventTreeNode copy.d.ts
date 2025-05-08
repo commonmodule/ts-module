@@ -8,4 +8,4 @@ export default abstract class EventTreeNode<T extends EventTreeNode<T, E>, E ext
     protected emit<K extends keyof (E & DefaultEvents)>(eventName: K, ...args: Parameters<(E & DefaultEvents)[K]>): this;
     remove(): void;
 }
-//# sourceMappingURL=EventTreeNode.d.ts.map
+//# sourceMappingURL=EventTreeNode%20copy.d.ts.map
