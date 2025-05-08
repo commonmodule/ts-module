@@ -1,33 +1,34 @@
-import EventHandlers from "./EventHandlers.js";
 import IEventContainer from "./IEventContainer.js";
 
-export type DefaultEvents = { remove: () => void };
+export type DefaultHandlers = { remove: () => void };
+export type EventContainerHandlers<E> = Omit<E, keyof DefaultHandlers>;
+export type WithDefaultHandlers<E> = E & DefaultHandlers;
 
-export default class EventContainer<E extends EventHandlers>
+export default class EventContainer<E extends EventContainerHandlers<E>>
   implements IEventContainer<E> {
   private eventHandlers: {
-    [K in keyof (E & DefaultEvents)]?: (E & DefaultEvents)[K][];
+    [K in keyof WithDefaultHandlers<E>]?: WithDefaultHandlers<E>[K][];
   } = {};
 
   private subscriptions: Array<{
-    target: IEventContainer<EventHandlers>;
+    target: IEventContainer<Record<string, (...args: any[]) => any>>;
     eventName: string;
     handler: (...args: any[]) => any;
     removeHandler: () => void;
   }> = [];
 
-  public on<K extends keyof (E & DefaultEvents)>(
+  public on<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
-    eventHandler: (E & DefaultEvents)[K],
+    eventHandler: WithDefaultHandlers<E>[K],
   ): this {
     if (!this.eventHandlers[eventName]) this.eventHandlers[eventName] = [];
     this.eventHandlers[eventName]!.push(eventHandler);
     return this;
   }
 
-  public off<K extends keyof (E & DefaultEvents)>(
+  public off<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
-    eventHandler: (E & DefaultEvents)[K],
+    eventHandler: WithDefaultHandlers<E>[K],
   ): this {
     const eventHandlers = this.eventHandlers[eventName];
     if (!eventHandlers) return this;
@@ -40,15 +41,23 @@ export default class EventContainer<E extends EventHandlers>
     return this;
   }
 
-  protected async emit<K extends keyof (E & DefaultEvents)>(
+  protected hasEvent<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
-    ...args: Parameters<(E & DefaultEvents)[K]>
-  ): Promise<ReturnType<(E & DefaultEvents)[K]>[]> {
+  ): boolean {
+    const events = this.eventHandlers[eventName];
+    if (!events) return false;
+    return events.length > 0;
+  }
+
+  protected async emit<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+    ...args: Parameters<WithDefaultHandlers<E>[K]>[]
+  ): Promise<ReturnType<WithDefaultHandlers<E>[K]>[]> {
     const eventHandlers = this.eventHandlers[eventName];
     if (!eventHandlers) return [];
 
-    const results: ReturnType<E[K]>[] = [];
-    const promises: Promise<ReturnType<E[K]>>[] = [];
+    const results: ReturnType<WithDefaultHandlers<E>[K]>[] = [];
+    const promises: Promise<ReturnType<WithDefaultHandlers<E>[K]>>[] = [];
 
     for (const handler of eventHandlers) {
       const result = handler(...args);
@@ -60,7 +69,7 @@ export default class EventContainer<E extends EventHandlers>
   }
 
   public subscribe<
-    E2 extends (EventHandlers & DefaultEvents),
+    E2 extends (Record<string, (...args: any[]) => any> & DefaultHandlers),
     K extends keyof E2,
   >(
     target: IEventContainer<E2>,

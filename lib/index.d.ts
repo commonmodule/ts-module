@@ -1,8 +1,7 @@
 export { default as EventNode } from "./node/EventNode.js";
 export { default as MessageChannelManager } from "./communication/MessageChannelManager.js";
 export { default as RealtimeClient } from "./communication/RealtimeClient.js";
-export { default as EventContainer } from "./event/EventContainer.js";
-export { default as EventHandlers } from "./event/EventHandlers.js";
+export { default as EventContainer, DefaultHandlers, EventContainerHandlers, } from "./event/EventContainer.js";
 export { default as ResourceLoader } from "./loaders/ResourceLoader.js";
 export { default as ArrayUtils } from "./utils/ArrayUtils.js";
 export { default as Debouncer } from "./utils/Debouncer.js";

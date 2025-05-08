@@ -1,11 +1,11 @@
-import { DefaultEvents } from "../event/EventContainer.js";
-import EventHandlers from "../event/EventHandlers.js";
+import { EventContainerHandlers, WithDefaultHandlers } from "../event/EventContainer.js";
 import IEventContainer from "../event/IEventContainer.js";
 import Node from "./Node.js";
-export default abstract class EventNode<T extends EventNode<T, E>, E extends EventHandlers> extends Node<T> implements IEventContainer<E> {
+export default abstract class EventNode<T extends Node<T>, E extends EventContainerHandlers<E>> extends Node<T> implements IEventContainer<E> {
     private readonly eventContainer;
-    on<K extends keyof (E & DefaultEvents)>(eventName: K, handler: (E & DefaultEvents)[K]): this;
-    protected emit<K extends keyof (E & DefaultEvents)>(eventName: K, ...args: Parameters<(E & DefaultEvents)[K]>): this;
+    on<K extends keyof WithDefaultHandlers<E>>(eventName: K, handler: WithDefaultHandlers<E>[K]): this;
+    protected hasEvent<K extends keyof WithDefaultHandlers<E>>(eventName: K): boolean;
+    protected emit<K extends keyof WithDefaultHandlers<E>>(eventName: K, ...args: Parameters<WithDefaultHandlers<E>[K]>[]): this;
     remove(): void;
 }
 //# sourceMappingURL=EventNode.d.ts.map

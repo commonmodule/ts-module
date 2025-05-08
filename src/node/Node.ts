@@ -1,6 +1,6 @@
 export default abstract class Node<T extends Node<T>> {
   protected parent: T | undefined;
-  protected children: T[] = [];
+  public children: T[] = [];
 
   protected isRemoved(): boolean {
     return (this as any).children === undefined;
