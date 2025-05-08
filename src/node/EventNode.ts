@@ -1,14 +1,14 @@
 import EventContainer, {
-  EventContainerHandlers,
   WithDefaultHandlers,
 } from "../event/EventContainer.js";
+import EventHandlers from "../event/EventHandlers.js";
 import IEventContainer from "../event/IEventContainer.js";
 import Node from "./Node.js";
 
 export default abstract class EventNode<
   T extends Node<T>,
-  E extends EventContainerHandlers<E>,
-> extends Node<T> implements IEventContainer<E> {
+  E extends EventHandlers,
+> extends Node<T> implements IEventContainer<WithDefaultHandlers<E>> {
   private readonly eventContainer = new EventContainer<E>();
 
   public on<K extends keyof WithDefaultHandlers<E>>(
@@ -27,7 +27,7 @@ export default abstract class EventNode<
 
   protected emit<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
-    ...args: Parameters<WithDefaultHandlers<E>[K]>[]
+    ...args: Parameters<WithDefaultHandlers<E>[K]>
   ): this {
     this.eventContainer["emit"](eventName, ...args);
     return this;

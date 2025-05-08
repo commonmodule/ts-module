@@ -1,11 +1,10 @@
+import EventHandlers from "./EventHandlers.js";
 import IEventContainer from "./IEventContainer.js";
 
-export type DefaultHandlers = { remove: () => void };
-export type EventContainerHandlers<E> = Omit<E, keyof DefaultHandlers>;
-export type WithDefaultHandlers<E> = E & DefaultHandlers;
+export type WithDefaultHandlers<E> = E & { remove: () => void };
 
-export default class EventContainer<E extends EventContainerHandlers<E>>
-  implements IEventContainer<E> {
+export default class EventContainer<E extends EventHandlers>
+  implements IEventContainer<WithDefaultHandlers<E>> {
   private eventHandlers: {
     [K in keyof WithDefaultHandlers<E>]?: WithDefaultHandlers<E>[K][];
   } = {};
@@ -51,7 +50,7 @@ export default class EventContainer<E extends EventContainerHandlers<E>>
 
   protected async emit<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
-    ...args: Parameters<WithDefaultHandlers<E>[K]>[]
+    ...args: Parameters<WithDefaultHandlers<E>[K]>
   ): Promise<ReturnType<WithDefaultHandlers<E>[K]>[]> {
     const eventHandlers = this.eventHandlers[eventName];
     if (!eventHandlers) return [];
@@ -68,7 +67,7 @@ export default class EventContainer<E extends EventContainerHandlers<E>>
     return results.concat(await Promise.all(promises));
   }
 
-  public subscribe<
+  /*public subscribe<
     E2 extends (Record<string, (...args: any[]) => any> & DefaultHandlers),
     K extends keyof E2,
   >(
@@ -97,16 +96,13 @@ export default class EventContainer<E extends EventContainerHandlers<E>>
     });
 
     return this;
-  }
+  }*/
 
   public remove() {
     if (!this.eventHandlers) {
       throw new Error("This container is already removed");
     }
-    this.emit(
-      "remove",
-      ...([] as Parameters<(E & { remove: () => void })["remove"]>),
-    );
+    this.emit("remove", ...[] as Parameters<WithDefaultHandlers<E>["remove"]>);
     delete (this as any).eventHandlers;
   }
 }
