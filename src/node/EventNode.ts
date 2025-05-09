@@ -12,13 +12,41 @@ export default abstract class EventNode<
 > extends Node<T> implements IEventContainer<WithDefaultHandlers<E>> {
   private readonly eventContainer = new EventContainer<E>();
 
+  public on<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
+
+  public on<K extends keyof DefaultHandlers>(
+    eventName: K,
+    eventHandler: DefaultHandlers[K],
+  ): this;
+
   public on<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
-    handler: WithDefaultHandlers<E>[K],
+    eventHandler: WithDefaultHandlers<E>[K],
   ): this {
-    this.eventContainer.on(eventName, handler);
+    this.eventContainer.on(eventName, eventHandler);
     return this;
   }
+
+  public off<K extends keyof E>(eventName: K, eventHandler?: E[K]): this;
+
+  public off<K extends keyof DefaultHandlers>(
+    eventName: K,
+    eventHandler?: DefaultHandlers[K],
+  ): this;
+
+  public off<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+    eventHandler?: WithDefaultHandlers<E>[K],
+  ): this {
+    this.eventContainer.off(eventName, eventHandler);
+    return this;
+  }
+
+  protected hasEvent<K extends keyof E>(eventName: K): boolean;
+
+  protected hasEvent<K extends keyof DefaultHandlers>(
+    eventName: K,
+  ): boolean;
 
   protected hasEvent<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
@@ -41,6 +69,27 @@ export default abstract class EventNode<
     ...args: Parameters<WithDefaultHandlers<E>[K]>
   ): Promise<ReturnType<WithDefaultHandlers<E>[K]>[]> {
     return this.eventContainer["emit"](eventName, ...args);
+  }
+
+  public bind<K extends keyof E>(
+    eventName: K,
+    target: IEventContainer<EventHandlers>,
+    eventHandler: E[K],
+  ): this;
+
+  public bind<K extends keyof DefaultHandlers>(
+    eventName: K,
+    target: IEventContainer<EventHandlers>,
+    eventHandler: DefaultHandlers[K],
+  ): this;
+
+  public bind<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+    target: IEventContainer<EventHandlers>,
+    eventHandler: WithDefaultHandlers<E>[K],
+  ): this {
+    this.eventContainer.bind(eventName, target, eventHandler);
+    return this;
   }
 
   public remove(): void {
