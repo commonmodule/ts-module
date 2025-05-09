@@ -1,4 +1,4 @@
-import EventHandlers, { EventHandler } from "./EventHandlers.js";
+import EventHandlers from "./EventHandlers.js";
 import IEventContainer from "./IEventContainer.js";
 
 export type DefaultHandlers = { remove: () => void };
@@ -13,8 +13,8 @@ export default class EventContainer<E extends EventHandlers>
   private bindings: Array<{
     eventName: string;
     target: IEventContainer<EventHandlers>;
-    eventHandler: EventHandler;
-    removeHandler: EventHandler;
+    eventHandler: (...args: any[]) => any;
+    removeHandler: () => void;
   }> = [];
 
   public on<K extends keyof E>(eventName: K, eventHandler: E[K]): this;

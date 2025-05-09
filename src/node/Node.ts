@@ -2,7 +2,7 @@ export default abstract class Node<T extends Node<T>> {
   protected parent: T | undefined;
   public children: T[] = [];
 
-  protected isRemoved(): boolean {
+  public isRemoved(): boolean {
     return (this as any).children === undefined;
   }
 
