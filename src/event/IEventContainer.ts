@@ -7,7 +7,7 @@ export default interface IEventContainer<E> {
 
   bind<K extends keyof E>(
     eventName: K,
-    target: IEventContainer<EventHandlers>,
     eventHandler: E[K],
+    target: IEventContainer<EventHandlers>,
   ): this;
 }

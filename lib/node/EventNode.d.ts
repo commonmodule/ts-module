@@ -12,8 +12,8 @@ export default abstract class EventNode<T extends Node<T>, E extends EventHandle
     protected hasEvent<K extends keyof DefaultHandlers>(eventName: K): boolean;
     protected emit<K extends keyof E>(eventName: K, ...args: Parameters<E[K]>): Promise<ReturnType<E[K]>[]>;
     protected emit<K extends keyof DefaultHandlers>(eventName: K, ...args: Parameters<DefaultHandlers[K]>): Promise<ReturnType<DefaultHandlers[K]>[]>;
-    bind<K extends keyof E>(eventName: K, target: IEventContainer<EventHandlers>, eventHandler: E[K]): this;
-    bind<K extends keyof DefaultHandlers>(eventName: K, target: IEventContainer<EventHandlers>, eventHandler: DefaultHandlers[K]): this;
+    bind<K extends keyof E>(eventName: K, eventHandler: E[K], target: IEventContainer<EventHandlers>): this;
+    bind<K extends keyof DefaultHandlers>(eventName: K, eventHandler: DefaultHandlers[K], target: IEventContainer<EventHandlers>): this;
     remove(): void;
 }
 //# sourceMappingURL=EventNode.d.ts.map
