@@ -1,8 +1,8 @@
-import EventContainer, {
+import EventHandlers from "../event/EventHandlers.js";
+import EventManager, {
   DefaultHandlers,
   WithDefaultHandlers,
-} from "../event/EventContainer.js";
-import EventHandlers from "../event/EventHandlers.js";
+} from "../event/EventManager.js";
 import IEventContainer from "../event/IEventContainer.js";
 import Node from "./Node.js";
 
@@ -10,7 +10,7 @@ export default abstract class EventNode<
   T extends Node<T>,
   E extends EventHandlers,
 > extends Node<T> implements IEventContainer<WithDefaultHandlers<E>> {
-  private readonly eventContainer = new EventContainer<E>();
+  private eventManager = new EventManager<E>(this);
 
   public on<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
 
@@ -23,7 +23,7 @@ export default abstract class EventNode<
     eventName: K,
     eventHandler: WithDefaultHandlers<E>[K],
   ): this {
-    this.eventContainer.on(eventName, eventHandler);
+    this.eventManager.addEvent(eventName, eventHandler);
     return this;
   }
 
@@ -38,37 +38,25 @@ export default abstract class EventNode<
     eventName: K,
     eventHandler?: WithDefaultHandlers<E>[K],
   ): this {
-    this.eventContainer.off(eventName, eventHandler);
+    this.eventManager.removeEvent(eventName, eventHandler);
     return this;
   }
 
-  protected hasEvent<K extends keyof E>(eventName: K): boolean;
-
-  protected hasEvent<K extends keyof DefaultHandlers>(
-    eventName: K,
-  ): boolean;
-
-  protected hasEvent<K extends keyof WithDefaultHandlers<E>>(
-    eventName: K,
-  ): boolean {
-    return this.eventContainer["hasEvent"](eventName);
-  }
-
-  protected async emit<K extends keyof E>(
+  protected emit<K extends keyof E>(
     eventName: K,
     ...args: Parameters<E[K]>
   ): Promise<ReturnType<E[K]>[]>;
 
-  protected async emit<K extends keyof DefaultHandlers>(
+  protected emit<K extends keyof DefaultHandlers>(
     eventName: K,
     ...args: Parameters<DefaultHandlers[K]>
   ): Promise<ReturnType<DefaultHandlers[K]>[]>;
 
-  protected async emit<K extends keyof WithDefaultHandlers<E>>(
+  protected emit<K extends keyof WithDefaultHandlers<E>>(
     eventName: K,
     ...args: Parameters<WithDefaultHandlers<E>[K]>
   ): Promise<ReturnType<WithDefaultHandlers<E>[K]>[]> {
-    return this.eventContainer["emit"](eventName, ...args);
+    return this.eventManager.emit(eventName, ...args);
   }
 
   public bind<K extends keyof E>(
@@ -88,12 +76,14 @@ export default abstract class EventNode<
     eventName: K,
     eventHandler: WithDefaultHandlers<E>[K],
   ): this {
-    this.eventContainer.bind(target, eventName, eventHandler);
+    this.eventManager.bind(target, eventName, eventHandler);
     return this;
   }
 
-  public remove(): void {
-    this.eventContainer.remove();
+  public remove() {
+    this.eventManager.remove();
+    delete (this as any).eventManager;
+
     super.remove();
   }
 }
