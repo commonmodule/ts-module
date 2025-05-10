@@ -30,7 +30,7 @@ export default abstract class Node<T extends Node<T>> {
     return this;
   }
 
-  protected clear(...except: (T | undefined)[]): this {
+  public clear(...except: (T | undefined)[]): this {
     let i = 0;
     while (this.children.length > except.length) {
       const c = this.children[i];
