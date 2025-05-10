@@ -12,7 +12,7 @@ export default class EventContainer<E extends EventHandlers>
 
   private bindings: Array<{
     eventName: string;
-    target: IEventContainer<EventHandlers>;
+    target: IEventContainer;
     eventHandler: (...args: any[]) => any;
     removeHandler: () => void;
   }> = [];
@@ -99,19 +99,19 @@ export default class EventContainer<E extends EventHandlers>
   }
 
   public bind<K extends keyof E>(
-    target: IEventContainer<EventHandlers>,
+    target: IEventContainer,
     eventName: K,
     eventHandler: E[K],
   ): this;
 
   public bind<K extends keyof DefaultHandlers>(
-    target: IEventContainer<EventHandlers>,
+    target: IEventContainer,
     eventName: K,
     eventHandler: DefaultHandlers[K],
   ): this;
 
   public bind<K extends keyof WithDefaultHandlers<E>>(
-    target: IEventContainer<EventHandlers>,
+    target: IEventContainer,
     eventName: K,
     eventHandler: WithDefaultHandlers<E>[K],
   ): this {
