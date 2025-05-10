@@ -72,23 +72,23 @@ export default abstract class EventNode<
   }
 
   public bind<K extends keyof E>(
+    target: IEventContainer<EventHandlers>,
     eventName: K,
     eventHandler: E[K],
-    target: IEventContainer<EventHandlers>,
   ): this;
 
   public bind<K extends keyof DefaultHandlers>(
+    target: IEventContainer<EventHandlers>,
     eventName: K,
     eventHandler: DefaultHandlers[K],
-    target: IEventContainer<EventHandlers>,
   ): this;
 
   public bind<K extends keyof WithDefaultHandlers<E>>(
+    target: IEventContainer<EventHandlers>,
     eventName: K,
     eventHandler: WithDefaultHandlers<E>[K],
-    target: IEventContainer<EventHandlers>,
   ): this {
-    this.eventContainer.bind(eventName, target, eventHandler);
+    this.eventContainer.bind(target, eventName, eventHandler);
     return this;
   }
 

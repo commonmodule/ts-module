@@ -99,20 +99,20 @@ export default class EventContainer<E extends EventHandlers>
   }
 
   public bind<K extends keyof E>(
-    eventName: K,
     target: IEventContainer<EventHandlers>,
+    eventName: K,
     eventHandler: E[K],
   ): this;
 
   public bind<K extends keyof DefaultHandlers>(
-    eventName: K,
     target: IEventContainer<EventHandlers>,
+    eventName: K,
     eventHandler: DefaultHandlers[K],
   ): this;
 
   public bind<K extends keyof WithDefaultHandlers<E>>(
-    eventName: K,
     target: IEventContainer<EventHandlers>,
+    eventName: K,
     eventHandler: WithDefaultHandlers<E>[K],
   ): this {
     this.on(eventName, eventHandler);
