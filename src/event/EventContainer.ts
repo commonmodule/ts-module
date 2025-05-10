@@ -4,7 +4,7 @@ import IEventContainer from "./IEventContainer.js";
 export type DefaultHandlers = { remove: () => void };
 export type WithDefaultHandlers<E> = E & DefaultHandlers;
 
-export default class EventContainer<E extends EventHandlers>
+export default class EventContainer<E extends EventHandlers = EventHandlers>
   implements IEventContainer<WithDefaultHandlers<E>> {
   private eventHandlers: {
     [K in keyof WithDefaultHandlers<E>]?: WithDefaultHandlers<E>[K][];

@@ -4,7 +4,7 @@ export type DefaultHandlers = {
     remove: () => void;
 };
 export type WithDefaultHandlers<E> = E & DefaultHandlers;
-export default class EventContainer<E extends EventHandlers> implements IEventContainer<WithDefaultHandlers<E>> {
+export default class EventContainer<E extends EventHandlers = EventHandlers> implements IEventContainer<WithDefaultHandlers<E>> {
     private eventHandlers;
     private bindings;
     on<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
