@@ -5,8 +5,11 @@ export type DefaultHandlers = { remove: () => void };
 export type WithDefaultHandlers<E> = E & DefaultHandlers;
 
 export default class EventManager<E extends EventHandlers> {
-  private eventHandlers: {
-    [K in keyof WithDefaultHandlers<E>]?: WithDefaultHandlers<E>[K][];
+  private events: {
+    [K in keyof WithDefaultHandlers<E>]?: {
+      eventHandler: WithDefaultHandlers<E>[K];
+      once?: boolean;
+    }[];
   } = {};
 
   private bindings: Array<{
@@ -29,8 +32,26 @@ export default class EventManager<E extends EventHandlers> {
     eventName: K,
     eventHandler: WithDefaultHandlers<E>[K],
   ): void {
-    if (!this.eventHandlers[eventName]) this.eventHandlers[eventName] = [];
-    this.eventHandlers[eventName]!.push(eventHandler);
+    if (!this.events[eventName]) this.events[eventName] = [];
+    this.events[eventName]!.push({ eventHandler });
+  }
+
+  public addOnceEvent<K extends keyof E>(
+    eventName: K,
+    eventHandler: E[K],
+  ): void;
+
+  public addOnceEvent<K extends keyof DefaultHandlers>(
+    eventName: K,
+    eventHandler: DefaultHandlers[K],
+  ): void;
+
+  public addOnceEvent<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+    eventHandler: WithDefaultHandlers<E>[K],
+  ): void {
+    if (!this.events[eventName]) this.events[eventName] = [];
+    this.events[eventName]!.push({ eventHandler, once: true });
   }
 
   public removeEvent<K extends keyof E>(
@@ -47,13 +68,13 @@ export default class EventManager<E extends EventHandlers> {
     eventName: K,
     eventHandler?: WithDefaultHandlers<E>[K],
   ): void {
-    const eventHandlers = this.eventHandlers[eventName];
-    if (!eventHandlers) return;
-    if (!eventHandler) delete this.eventHandlers[eventName];
+    const events = this.events[eventName];
+    if (!events) return;
+    if (!eventHandler) delete this.events[eventName];
     else {
-      const index = eventHandlers.indexOf(eventHandler);
-      if (index !== -1) eventHandlers.splice(index, 1);
-      if (eventHandlers.length === 0) delete this.eventHandlers[eventName];
+      const index = events.findIndex((h) => h.eventHandler === eventHandler);
+      if (index !== -1) events.splice(index, 1);
+      if (events.length === 0) delete this.events[eventName];
     }
   }
 
@@ -71,14 +92,15 @@ export default class EventManager<E extends EventHandlers> {
     eventName: K,
     ...args: Parameters<WithDefaultHandlers<E>[K]>
   ): Promise<ReturnType<WithDefaultHandlers<E>[K]>[]> {
-    const eventHandlers = this.eventHandlers[eventName];
-    if (!eventHandlers) return [];
+    const events = this.events[eventName];
+    if (!events) return [];
 
     const results: ReturnType<WithDefaultHandlers<E>[K]>[] = [];
     const promises: Promise<ReturnType<WithDefaultHandlers<E>[K]>>[] = [];
 
-    for (const handler of eventHandlers) {
-      const result = handler(...args);
+    for (const event of events) {
+      const result = event.eventHandler(...args);
+      if (event.once) this.removeEvent(eventName, event.eventHandler);
       if (result instanceof Promise) promises.push(result);
       else results.push(result);
     }
@@ -127,12 +149,10 @@ export default class EventManager<E extends EventHandlers> {
   }
 
   public remove() {
-    if (!this.eventHandlers) {
-      throw new Error("This container is already removed");
-    }
+    if (!this.events) throw new Error("This manager is already removed");
 
     this.emit("remove");
-    delete (this as any).eventHandlers;
+    delete (this as any).events;
 
     for (const binding of this.bindings) {
       binding.target.off("remove", binding.removeHandler);

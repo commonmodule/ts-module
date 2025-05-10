@@ -6,11 +6,13 @@ export type DefaultHandlers = {
 export type WithDefaultHandlers<E> = E & DefaultHandlers;
 export default class EventManager<E extends EventHandlers> {
     private eventContainer;
-    private eventHandlers;
+    private events;
     private bindings;
     constructor(eventContainer: IEventContainer<E>);
     addEvent<K extends keyof E>(eventName: K, eventHandler: E[K]): void;
     addEvent<K extends keyof DefaultHandlers>(eventName: K, eventHandler: DefaultHandlers[K]): void;
+    addOnceEvent<K extends keyof E>(eventName: K, eventHandler: E[K]): void;
+    addOnceEvent<K extends keyof DefaultHandlers>(eventName: K, eventHandler: DefaultHandlers[K]): void;
     removeEvent<K extends keyof E>(eventName: K, eventHandler?: E[K]): void;
     removeEvent<K extends keyof DefaultHandlers>(eventName: K, eventHandler?: DefaultHandlers[K]): void;
     emit<K extends keyof E>(eventName: K, ...args: Parameters<E[K]>): Promise<ReturnType<E[K]>[]>;

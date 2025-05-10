@@ -27,6 +27,21 @@ export default abstract class EventNode<
     return this;
   }
 
+  public once<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
+
+  public once<K extends keyof DefaultHandlers>(
+    eventName: K,
+    eventHandler: DefaultHandlers[K],
+  ): this;
+
+  public once<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+    eventHandler: WithDefaultHandlers<E>[K],
+  ): this {
+    this.eventManager.addOnceEvent(eventName, eventHandler);
+    return this;
+  }
+
   public off<K extends keyof E>(eventName: K, eventHandler?: E[K]): this;
 
   public off<K extends keyof DefaultHandlers>(

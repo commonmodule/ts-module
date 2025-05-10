@@ -5,6 +5,8 @@ export default class EventContainer<E extends EventHandlers = EventHandlers> imp
     private eventManager;
     on<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
     on<K extends keyof DefaultHandlers>(eventName: K, eventHandler: DefaultHandlers[K]): this;
+    once<K extends keyof E>(eventName: K, eventHandler: E[K]): this;
+    once<K extends keyof DefaultHandlers>(eventName: K, eventHandler: DefaultHandlers[K]): this;
     off<K extends keyof E>(eventName: K, eventHandler?: E[K]): this;
     off<K extends keyof DefaultHandlers>(eventName: K, eventHandler?: DefaultHandlers[K]): this;
     protected emit<K extends keyof E>(eventName: K, ...args: Parameters<E[K]>): Promise<ReturnType<E[K]>[]>;
