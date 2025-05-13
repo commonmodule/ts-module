@@ -54,6 +54,20 @@ export default class EventManager<E extends EventHandlers> {
     this.events[eventName]!.push({ eventHandler, once: true });
   }
 
+  public hasEvent<K extends keyof E>(eventName: K): boolean;
+
+  public hasEvent<K extends keyof DefaultHandlers>(
+    eventName: K,
+  ): boolean;
+
+  public hasEvent<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+  ): boolean {
+    const events = this.events[eventName];
+    if (!events) return false;
+    return events.length > 0;
+  }
+
   public removeEvent<K extends keyof E>(
     eventName: K,
     eventHandler?: E[K],

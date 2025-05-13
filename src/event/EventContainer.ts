@@ -39,6 +39,18 @@ export default class EventContainer<E extends EventHandlers = EventHandlers>
     return this;
   }
 
+  public hasEvent<K extends keyof E>(eventName: K): boolean;
+
+  public hasEvent<K extends keyof DefaultHandlers>(
+    eventName: K,
+  ): boolean;
+
+  public hasEvent<K extends keyof WithDefaultHandlers<E>>(
+    eventName: K,
+  ): boolean {
+    return this.eventManager.hasEvent(eventName);
+  }
+
   public off<K extends keyof E>(eventName: K, eventHandler?: E[K]): this;
 
   public off<K extends keyof DefaultHandlers>(
